@@ -1,0 +1,19 @@
+name: OWRT-TEST
+
+on:
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+permissions: write-all
+
+jobs:
+  owrt_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Old Workflows
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 0
+          keep_minimum_runs: 0
