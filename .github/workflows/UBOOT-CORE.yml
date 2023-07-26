@@ -33,8 +33,7 @@ jobs:
           sudo -E apt -yqq update
           sudo -E apt -yqq purge $(cat $GITHUB_WORKSPACE/Depends.txt | sed -n "2{s/\r$//;p;q}")
           sudo -E apt -yqq full-upgrade
-          #sudo -E apt -yqq install $(cat $GITHUB_WORKSPACE/Depends.txt | sed -n "3{s/\r$//;p;q}")
-          sudo -E apt -yqq install gcc-aarch64-linux-gnu dos2unix
+          sudo -E apt -yqq install $(cat $GITHUB_WORKSPACE/Depends.txt | sed -n "3{s/\r$//;p;q}")
           sudo -E apt -yqq autoremove --purge
           sudo -E apt -yqq autoclean
           sudo -E apt -yqq clean
@@ -58,8 +57,8 @@ jobs:
 
       - name: Check Scripts
         run: |
-          dos2unix $(find ./ -type f -iname "*.sh")
-          chmod +x $(find ./ -type f -iname "*.sh")
+          dos2unix $(find ./ -maxdepth 1 -type f -iname "*.sh")
+          chmod +x $(find ./ -maxdepth 1 -type f -iname "*.sh")
 
       - name: Compile Firmware
         run: |
