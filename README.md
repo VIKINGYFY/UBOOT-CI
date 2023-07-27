@@ -16,6 +16,6 @@ Mediatek系列，包含LIVINET_ZR-3020 CETRON_CT3003 CMCC_RAX3000M JCG_Q30 NX30-
 
 Depends.txt——环境依赖列表
 
-Scripts——自定义脚本
+Uboots.sh——Uboot型号脚本
 
 workflows——自定义CI配置
