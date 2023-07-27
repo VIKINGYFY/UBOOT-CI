@@ -79,7 +79,7 @@ jobs:
           for file in $(find ./output/ -type f -iname "*.*") ; do
             export ext=$(basename "$file" | cut -d '.' -f 2-)
             export name=$(basename "$file" | cut -d '.' -f 1)
-            export new_file="$name"_"$OWRT_DATE"."$ext"
+            export new_file="$name"_"$UB_DATE"."$ext"
             mv -f "$file" ./upload/"$new_file"
           done
 
