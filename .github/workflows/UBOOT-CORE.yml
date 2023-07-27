@@ -44,7 +44,7 @@ jobs:
         run: |
           export UB_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
           export UB_SOURCE=$(echo $UB_URL | cut -d '/' -f 5-)
-          export UB_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Scripts/Uboots.sh)
+          export UB_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
 
           echo "UB_TARGET=$UB_TARGET" >> $GITHUB_ENV
           echo "UB_SOURCE=$UB_SOURCE" >> $GITHUB_ENV
@@ -64,7 +64,7 @@ jobs:
         run: |
           cd ./uboot
 
-          $GITHUB_WORKSPACE/Scripts/Uboots.sh
+          $GITHUB_WORKSPACE/Uboots.sh
 
           echo "======================="
           df -h
