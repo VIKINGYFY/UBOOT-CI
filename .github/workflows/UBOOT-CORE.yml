@@ -57,8 +57,8 @@ jobs:
 
       - name: Check Scripts
         run: |
-          dos2unix $(find ./ -maxdepth 1 -type f -iname "*.sh")
-          chmod +x $(find ./ -maxdepth 1 -type f -iname "*.sh")
+          dos2unix $(find ./ -maxdepth 2 -type f -iname "*.sh")
+          chmod +x $(find ./ -maxdepth 2 -type f -iname "*.sh")
 
       - name: Compile Firmware
         run: |
