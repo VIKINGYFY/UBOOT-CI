@@ -76,7 +76,12 @@ jobs:
         run: |
           cd ./uboot && mkdir ./upload
 
-          cp -rf $(find ./output/ -type f -iname "*.*") ./upload/
+          for file in $(find ./output/ -type f -iname "*.*") ; do
+            export ext=$(basename "$file" | cut -d '.' -f 2-)
+            export name=$(basename "$file" | cut -d '.' -f 1)
+            export new_file="$name"_"$OWRT_DATE"."$ext"
+            mv -f "$file" ./upload/"$new_file"
+          done
 
       - name: Release Firmware
         uses: softprops/action-gh-release@master
