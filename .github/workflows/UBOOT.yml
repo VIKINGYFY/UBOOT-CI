@@ -1,6 +1,7 @@
-#CI项目名
+#CI项目
 name: UBOOT-798x
 
+#CI计划
 on:
   #自动编译：每周日早上4点
   schedule:
