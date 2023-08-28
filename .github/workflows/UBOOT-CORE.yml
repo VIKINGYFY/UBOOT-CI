@@ -52,12 +52,14 @@ jobs:
         run: |
           export UB_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
           export UB_SOURCE=$(echo $UB_URL | cut -d '/' -f 5-)
-          export UB_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
+          export UB_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
+          export UB_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
 
           echo "UB_TARGET=$UB_TARGET" >> $GITHUB_ENV
           echo "UB_SOURCE=$UB_SOURCE" >> $GITHUB_ENV
           echo "UB_DATE=$UB_DATE" >> $GITHUB_ENV
-          echo "UB_TYPE=$UB_TYPE" >> $GITHUB_ENV
+          echo "UB_SINGLE_TYPE=$UB_SINGLE_TYPE" >> $GITHUB_ENV
+          echo "UB_MULTI_TYPE=$UB_MULTI_TYPE" >> $GITHUB_ENV
 
       - name: Clone UBOOT Code
         run: |
@@ -103,7 +105,8 @@ jobs:
 
             源码：${{env.UB_SOURCE}}
             平台：${{env.UB_TARGET}}
-            设备：${{env.UB_TYPE}}
+            单分区设备：${{env.UB_SINGLE_TYPE}}
+            多分区设备：${{env.UB_MULTI_TYPE}}
 
       - name: Delete Old Releases
         uses: dev-drprasad/delete-older-releases@master
