@@ -63,7 +63,7 @@ jobs:
         run: |
           git clone --depth=1 --single-branch $UB_URL ./uboot
 
-      - name: Check Scripts
+      - name: Check Files
         run: |
           dos2unix $(find ./ -maxdepth 2 -type f -iregex ".*\(txt\|sh\)$")
           chmod +x $(find ./ -maxdepth 2 -type f -iname "*.sh")
