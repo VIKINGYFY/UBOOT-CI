@@ -73,6 +73,8 @@ jobs:
 
       - name: Space Usage
         run: |
+          cd ./uboot
+
           echo "======================="
           df -h
           echo "======================="
