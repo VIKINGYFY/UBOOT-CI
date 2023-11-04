@@ -5,6 +5,9 @@ on:
   #公用核心标识
   workflow_call:
     inputs:
+      UB_BRANCH:
+        required: true
+        type: string
       UB_TARGET:
         required: true
         type: string
@@ -14,6 +17,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  UB_BRANCH: ${{inputs.UB_BRANCH}}
   UB_TARGET: ${{inputs.UB_TARGET}}
   UB_URL: ${{inputs.UB_URL}}
 
@@ -55,12 +59,11 @@ jobs:
 
       - name: Clone UBOOT Code
         run: |
-          git clone --depth=1 --single-branch $UB_URL ./uboot
+          git clone --depth=1 --single-branch --branch "$UB_BRANCH" $UB_URL ./uboot
 
-      - name: Check Files
+      - name: Check Scripts
         run: |
-          dos2unix $(find ./ -maxdepth 2 -type f -iregex ".*\(txt\|sh\)$")
-          chmod +x $(find ./ -maxdepth 2 -type f -iname "*.sh")
+          find ./ -maxdepth 2 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
 
       - name: Compile Firmware
         run: |
