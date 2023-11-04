@@ -22,3 +22,5 @@ jobs:
       UB_TARGET: Mediatek-798x
       #默认源码
       UB_URL: https://github.com/hanwckf/bl-mt798x.git
+      #默认分支
+      UB_BRANCH: master
