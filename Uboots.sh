@@ -11,6 +11,6 @@ SOC=mt7981 BOARD=jcg_q30 ./build.sh
 SOC=mt7981 BOARD=konka_komi-a31 ./build.sh
 SOC=mt7981 BOARD=livinet_zr-3020 ./build.sh
 SOC=mt7981 BOARD=clt_r30b1 MULTI_LAYOUT=1 ./build.sh
+SOC=mt7981 BOARD=ax3000t MULTI_LAYOUT=1 ./build.sh
 SOC=mt7981 BOARD=wr30u MULTI_LAYOUT=1 ./build.sh
-SOC=mt7981 BOARD=xiaomi-ax3000t MULTI_LAYOUT=1 ./build.sh
 SOC=mt7986 BOARD=redmi_ax6000 MULTI_LAYOUT=1 ./build.sh
