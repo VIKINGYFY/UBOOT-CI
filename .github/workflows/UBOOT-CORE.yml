@@ -71,6 +71,8 @@ jobs:
 
           $GITHUB_WORKSPACE/Uboots.sh
 
+      - name: Space Usage
+        run: |
           echo "======================="
           df -h
           echo "======================="
