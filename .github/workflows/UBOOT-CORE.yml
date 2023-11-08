@@ -45,7 +45,7 @@ jobs:
 
       - name: Initialization Values
         run: |
-          export UB_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
+          export UB_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
           export UB_SOURCE=$(echo $UB_URL | cut -d '/' -f 5-)
           export UB_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
           export UB_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
