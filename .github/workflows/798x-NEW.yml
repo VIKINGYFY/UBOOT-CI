@@ -1,5 +1,5 @@
 #CI项目
-name: UBOOT-798x
+name: 798x-NEW
 
 #CI计划
 on:
@@ -24,3 +24,7 @@ jobs:
       UB_URL: https://github.com/hanwckf/bl-mt798x.git
       #默认分支
       UB_BRANCH: master
+      #默认ATF版本
+      UB_ATF: atf-20231013-0ea67d76a
+      #默认MTK版本
+      UB_MTK: uboot-mtk-20230718-09eda825
