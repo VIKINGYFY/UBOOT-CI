@@ -13,12 +13,20 @@ on:
       UB_URL:
         required: true
         type: string
+      UB_ATF:
+        required: true
+        type: string
+      UB_MTK:
+        required: true
+        type: string
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   UB_BRANCH: ${{inputs.UB_BRANCH}}
   UB_TARGET: ${{inputs.UB_TARGET}}
   UB_URL: ${{inputs.UB_URL}}
+  UB_ATF: ${{inputs.UB_ATF}}
+  UB_MTK: ${{inputs.UB_MTK}}
 
 jobs:
   ub_core:
@@ -47,14 +55,16 @@ jobs:
         run: |
           export UB_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
           export UB_SOURCE=$(echo $UB_URL | cut -d '/' -f 5-)
-          export UB_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
           export UB_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
+          export UB_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
 
-          echo "UB_TARGET=$UB_TARGET" >> $GITHUB_ENV
-          echo "UB_SOURCE=$UB_SOURCE" >> $GITHUB_ENV
+          echo "UB_ATF=$UB_ATF" >> $GITHUB_ENV
+          echo "UB_MTK=$UB_MTK" >> $GITHUB_ENV
           echo "UB_DATE=$UB_DATE" >> $GITHUB_ENV
-          echo "UB_SINGLE_TYPE=$UB_SINGLE_TYPE" >> $GITHUB_ENV
+          echo "UB_SOURCE=$UB_SOURCE" >> $GITHUB_ENV
+          echo "UB_TARGET=$UB_TARGET" >> $GITHUB_ENV
           echo "UB_MULTI_TYPE=$UB_MULTI_TYPE" >> $GITHUB_ENV
+          echo "UB_SINGLE_TYPE=$UB_SINGLE_TYPE" >> $GITHUB_ENV
 
       - name: Clone UBOOT Code
         run: |
@@ -63,6 +73,13 @@ jobs:
       - name: Check Scripts
         run: |
           find ./ -maxdepth 2 -type f -iregex ".*\(txt\|sh\)$" -exec dos2unix {} \; -exec chmod +x {} \;
+
+      - name: Modified Version
+        run: |
+          cd ./uboot
+
+          sed -i "5s/UBOOT_DIR=.*/UBOOT_DIR=$UB_MTK/" ./build.sh
+          sed -i "7s/ATF_DIR=.*/ATF_DIR=$UB_ATF/" ./build.sh
 
       - name: Compile Firmware
         run: |
@@ -103,13 +120,15 @@ jobs:
 
             源码：${{env.UB_SOURCE}}
             平台：${{env.UB_TARGET}}
+            ATF版本：${{env.UB_ATF}}
+            MTK版本：${{env.UB_MTK}}
             单分区设备：${{env.UB_SINGLE_TYPE}}
             多分区设备：${{env.UB_MULTI_TYPE}}
 
       - name: Delete Old Releases
         uses: dev-drprasad/delete-older-releases@master
         with:
-          keep_latest: 2
+          keep_latest: 4
           delete_tags: true
 
       - name: Delete Old Workflows
