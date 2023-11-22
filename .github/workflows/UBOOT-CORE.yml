@@ -55,11 +55,15 @@ jobs:
         run: |
           export UB_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
           export UB_SOURCE=$(echo $UB_URL | cut -d '/' -f 5-)
+          export UB_ATF_VER=$(echo $UB_ATF | grep -oP 'atf-\d+')
+          export UB_MTK_VER=$(echo $UB_MTK | grep -oP 'mtk-\d+')
           export UB_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
           export UB_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
 
           echo "UB_ATF=$UB_ATF" >> $GITHUB_ENV
+          echo "UB_ATF_VER=$UB_ATF_VER" >> $GITHUB_ENV
           echo "UB_MTK=$UB_MTK" >> $GITHUB_ENV
+          echo "UB_MTK_VER=$UB_MTK_VER" >> $GITHUB_ENV
           echo "UB_DATE=$UB_DATE" >> $GITHUB_ENV
           echo "UB_SOURCE=$UB_SOURCE" >> $GITHUB_ENV
           echo "UB_TARGET=$UB_TARGET" >> $GITHUB_ENV
@@ -111,7 +115,7 @@ jobs:
       - name: Release Firmware
         uses: softprops/action-gh-release@master
         with:
-          tag_name: ${{env.UB_TARGET}}_${{env.UB_SOURCE}}_${{env.UB_DATE}}
+          tag_name: ${{env.UB_ATF_VER}}_${{env.UB_MTK_VER}}_${{env.UB_DATE}}
           files: ./uboot/upload/*.*
           body: |
             这是个平台固件包，内含多个设备！
