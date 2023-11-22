@@ -1,0 +1,30 @@
+#CI项目
+name: 798x-OLD
+
+#CI计划
+on:
+  #自动编译：每周日早上4点
+  schedule:
+    - cron: 0 20 * * 0
+  #手动编译
+  workflow_dispatch:
+
+#CI权限
+permissions: write-all
+
+#CI任务
+jobs:
+  ub_config:
+    #调用公用编译核心UBOOT-CORE.yml
+    uses: ./.github/workflows/UBOOT-CORE.yml
+    with:
+      #编译平台
+      UB_TARGET: Mediatek-798x
+      #默认源码
+      UB_URL: https://github.com/hanwckf/bl-mt798x.git
+      #默认分支
+      UB_BRANCH: master
+      #默认ATF版本
+      UB_ATF: atf-20220606-637ba581b
+      #默认MTK版本
+      UB_MTK: uboot-mtk-20220606
