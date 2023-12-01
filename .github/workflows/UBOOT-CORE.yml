@@ -91,10 +91,12 @@ jobs:
 
           $GITHUB_WORKSPACE/Uboots.sh
 
-      - name: Space Usage
+      - name: Machine Information
         run: |
           cd ./uboot
 
+          echo "======================="
+          lscpu | egrep 'Model name|Core|Thread'
           echo "======================="
           df -h
           echo "======================="
