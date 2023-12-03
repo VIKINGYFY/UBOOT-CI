@@ -14,17 +14,17 @@ permissions: write-all
 
 #CI任务
 jobs:
-  ub_config:
-    #调用公用编译核心UBOOT-CORE.yml
-    uses: ./.github/workflows/UBOOT-CORE.yml
+  wrt_config:
+    #调用公用编译核心WRT-CORE.yml
+    uses: ./.github/workflows/WRT-CORE.yml
     with:
       #编译平台
-      UB_TARGET: Mediatek-798x
+      WRT_TARGET: Mediatek-798x
       #默认源码
-      UB_URL: https://github.com/hanwckf/bl-mt798x.git
+      WRT_URL: https://github.com/hanwckf/bl-mt798x.git
       #默认分支
-      UB_BRANCH: master
+      WRT_BRANCH: master
       #默认ATF版本
-      UB_ATF: atf-20220606-637ba581b
+      WRT_ATF: atf-20220606-637ba581b
       #默认MTK版本
-      UB_MTK: uboot-mtk-20220606
+      WRT_MTK: uboot-mtk-20220606

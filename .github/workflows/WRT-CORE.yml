@@ -1,35 +1,35 @@
 #云编译公用核心
-name: UBOOT-CORE
+name: WRT-CORE
 
 on:
   workflow_call:
     inputs:
-      UB_BRANCH:
+      WRT_BRANCH:
         required: true
         type: string
-      UB_TARGET:
+      WRT_TARGET:
         required: true
         type: string
-      UB_URL:
+      WRT_URL:
         required: true
         type: string
-      UB_ATF:
+      WRT_ATF:
         required: true
         type: string
-      UB_MTK:
+      WRT_MTK:
         required: true
         type: string
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  UB_BRANCH: ${{inputs.UB_BRANCH}}
-  UB_TARGET: ${{inputs.UB_TARGET}}
-  UB_URL: ${{inputs.UB_URL}}
-  UB_ATF: ${{inputs.UB_ATF}}
-  UB_MTK: ${{inputs.UB_MTK}}
+  WRT_BRANCH: ${{inputs.WRT_BRANCH}}
+  WRT_TARGET: ${{inputs.WRT_TARGET}}
+  WRT_URL: ${{inputs.WRT_URL}}
+  WRT_ATF: ${{inputs.WRT_ATF}}
+  WRT_MTK: ${{inputs.WRT_MTK}}
 
 jobs:
-  ub_core:
+  wrt_core:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Projects
@@ -53,26 +53,26 @@ jobs:
 
       - name: Initialization Values
         run: |
-          export UB_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
-          export UB_SOURCE=$(echo $UB_URL | cut -d '/' -f 5-)
-          export UB_ATF_VER=$(echo $UB_ATF | grep -oP 'atf-\d+')
-          export UB_MTK_VER=$(echo $UB_MTK | grep -oP 'mtk-\d+')
-          export UB_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
-          export UB_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
+          export WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
+          export WRT_SOURCE=$(echo $WRT_URL | cut -d '/' -f 5-)
+          export WRT_ATF_VER=$(echo $WRT_ATF | grep -oP 'atf-\d+')
+          export WRT_MTK_VER=$(echo $WRT_MTK | grep -oP 'mtk-\d+')
+          export WRT_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
+          export WRT_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
 
-          echo "UB_ATF=$UB_ATF" >> $GITHUB_ENV
-          echo "UB_ATF_VER=$UB_ATF_VER" >> $GITHUB_ENV
-          echo "UB_MTK=$UB_MTK" >> $GITHUB_ENV
-          echo "UB_MTK_VER=$UB_MTK_VER" >> $GITHUB_ENV
-          echo "UB_DATE=$UB_DATE" >> $GITHUB_ENV
-          echo "UB_SOURCE=$UB_SOURCE" >> $GITHUB_ENV
-          echo "UB_TARGET=$UB_TARGET" >> $GITHUB_ENV
-          echo "UB_MULTI_TYPE=$UB_MULTI_TYPE" >> $GITHUB_ENV
-          echo "UB_SINGLE_TYPE=$UB_SINGLE_TYPE" >> $GITHUB_ENV
+          echo "WRT_ATF=$WRT_ATF" >> $GITHUB_ENV
+          echo "WRT_ATF_VER=$WRT_ATF_VER" >> $GITHUB_ENV
+          echo "WRT_MTK=$WRT_MTK" >> $GITHUB_ENV
+          echo "WRT_MTK_VER=$WRT_MTK_VER" >> $GITHUB_ENV
+          echo "WRT_DATE=$WRT_DATE" >> $GITHUB_ENV
+          echo "WRT_SOURCE=$WRT_SOURCE" >> $GITHUB_ENV
+          echo "WRT_TARGET=$WRT_TARGET" >> $GITHUB_ENV
+          echo "WRT_MULTI_TYPE=$WRT_MULTI_TYPE" >> $GITHUB_ENV
+          echo "WRT_SINGLE_TYPE=$WRT_SINGLE_TYPE" >> $GITHUB_ENV
 
-      - name: Clone UBOOT Code
+      - name: Clone Code
         run: |
-          git clone --depth=1 --single-branch --branch "$UB_BRANCH" $UB_URL ./uboot
+          git clone --depth=1 --single-branch --branch "$WRT_BRANCH" $WRT_URL ./wrt/
 
       - name: Check Scripts
         run: |
@@ -80,23 +80,23 @@ jobs:
 
       - name: Modified Version
         run: |
-          cd ./uboot
+          cd ./wrt/
 
-          sed -i "5s/UBOOT_DIR=.*/UBOOT_DIR=$UB_MTK/" ./build.sh
-          sed -i "7s/ATF_DIR=.*/ATF_DIR=$UB_ATF/" ./build.sh
+          sed -i "5s/WRTOOT_DIR=.*/WRTOOT_DIR=$WRT_MTK/" ./build.sh
+          sed -i "7s/ATF_DIR=.*/ATF_DIR=$WRT_ATF/" ./build.sh
 
       - name: Compile Firmware
         run: |
-          cd ./uboot
+          cd ./wrt/
 
           $GITHUB_WORKSPACE/Uboots.sh
 
       - name: Machine Information
         run: |
-          cd ./uboot
+          cd ./wrt/
 
           echo "======================="
-          lscpu | egrep 'name|Core|Thread'
+          lscpu | egrep "name|Core|Thread"
           echo "======================="
           df -h
           echo "======================="
@@ -105,31 +105,31 @@ jobs:
 
       - name: Package Firmware
         run: |
-          cd ./uboot && mkdir ./upload
+          cd ./wrt/ && mkdir ./upload
 
           for file in $(find ./output/ -type f -iname "*.*") ; do
             export ext=$(basename "$file" | cut -d '.' -f 2-)
             export name=$(basename "$file" | cut -d '.' -f 1)
-            export new_file="$name"_"$UB_DATE"."$ext"
+            export new_file="$name"_"$WRT_DATE"."$ext"
             mv -f "$file" ./upload/"$new_file"
           done
 
       - name: Release Firmware
         uses: softprops/action-gh-release@master
         with:
-          tag_name: ${{env.UB_ATF_VER}}_${{env.UB_MTK_VER}}_${{env.UB_DATE}}
-          files: ./uboot/upload/*.*
+          tag_name: ${{env.WRT_ATF_VER}}_${{env.WRT_MTK_VER}}_${{env.WRT_DATE}}
+          files: ./wrt/upload/*.*
           body: |
             这是个平台固件包，内含多个设备！
             请注意选择你需要的设备固件！
             不要问，更就完事了！
 
-            源码：${{env.UB_SOURCE}}
-            平台：${{env.UB_TARGET}}
-            ATF版本：${{env.UB_ATF}}
-            MTK版本：${{env.UB_MTK}}
-            单分区设备：${{env.UB_SINGLE_TYPE}}
-            多分区设备：${{env.UB_MULTI_TYPE}}
+            源码：${{env.WRT_SOURCE}}
+            平台：${{env.WRT_TARGET}}
+            ATF版本：${{env.WRT_ATF}}
+            MTK版本：${{env.WRT_MTK}}
+            单分区设备：${{env.WRT_SINGLE_TYPE}}
+            多分区设备：${{env.WRT_MULTI_TYPE}}
 
       - name: Delete Old Releases
         uses: dev-drprasad/delete-older-releases@master
