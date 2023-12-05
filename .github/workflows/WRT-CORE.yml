@@ -105,7 +105,7 @@ jobs:
 
       - name: Package Firmware
         run: |
-          cd ./wrt/ && mkdir ./upload
+          cd ./wrt/ && mkdir ./upload/
 
           for file in $(find ./output/ -type f -iname "*.*") ; do
             export ext=$(basename "$file" | cut -d '.' -f 2-)
