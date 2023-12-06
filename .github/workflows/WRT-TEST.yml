@@ -20,7 +20,17 @@ jobs:
           export TEST_1=$(basename "$(pwd)")
           export TEST_2=$(basename "$GITHUB_WORKSPACE")
 
+          echo "TEST_1=$TEST_1" >> $GITHUB_ENV
+          echo "TEST_2=$TEST_2" >> $GITHUB_ENV
+          echo "TEST_3=$(pwd)" >> $GITHUB_ENV
+          echo "TEST_4=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
       - name: test_2
         run: |
+          echo $(pwd)
+          echo $GITHUB_WORKSPACE
+
           echo $TEST_1
           echo $TEST_2
+          echo $TEST_3
+          echo $TEST_4
