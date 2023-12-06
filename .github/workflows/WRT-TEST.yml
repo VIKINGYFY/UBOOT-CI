@@ -1,0 +1,21 @@
+name: WRT-TEST
+
+on:
+  workflow_dispatch:
+
+permissions: write-all
+
+env:
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+jobs:
+  wrt_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test_1
+        run: |
+          export TEST_REPO=$(basename $(pwd))
+
+      - name: test_2
+        run: |
+          echo $TEST_REPO
