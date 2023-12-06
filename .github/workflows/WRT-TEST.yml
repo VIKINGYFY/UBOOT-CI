@@ -12,10 +12,15 @@ jobs:
   wrt_test:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Projects
+        uses: actions/checkout@main
+
       - name: test_1
         run: |
-          export TEST_REPO=$(basename $(pwd))
+          export TEST_1=$(basename "$(pwd)")
+          export TEST_2=$(basename "$GITHUB_WORKSPACE")
 
       - name: test_2
         run: |
-          echo $TEST_REPO
+          echo $TEST_1
+          echo $TEST_2
