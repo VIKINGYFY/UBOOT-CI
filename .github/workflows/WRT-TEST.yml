@@ -17,9 +17,11 @@ jobs:
 
       - name: test_1
         run: |
+          echo $(sed -n "1{s/^#//;s/\r$//;p;q}" ./Uboots.sh)
           echo ~
-          echo pwd
+          echo $(pwd)
           echo $GITHUB_WORKSPACE
           echo $(basename ~)
-          echo $(basename pwd)
+          echo $(basename $(pwd))
           echo $(basename $GITHUB_WORKSPACE)
+          ./Uboots.sh
