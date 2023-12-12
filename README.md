@@ -10,7 +10,7 @@ https://github.com/hanwckf/bl-mt798x
 
 固件信息里的时间为编译开始的时间，方便核对上游源码提交时间。
 
-Mediatek系列。
+MEDIATEK系列。
 
 # 目录简要说明：
 

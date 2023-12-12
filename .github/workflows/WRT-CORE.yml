@@ -104,11 +104,11 @@ jobs:
         run: |
           cd ./wrt/ && mkdir ./upload/
 
-          for file in $(find ./output/ -type f -iname "*.*") ; do
-            ext=$(basename $file | cut -d '.' -f 2-)
-            name=$(basename $file | cut -d '.' -f 1)
-            new_file="$name"_"$WRT_DATE"."$ext"
-            mv -f $file ./upload/$new_file
+          for FILE in $(find ./output/ -type f -iname "*.*") ; do
+            EXT=$(basename $FILE | cut -d '.' -f 2-)
+            NAME=$(basename $FILE | cut -d '.' -f 1)
+            NEW_FILE="$NAME"_"$WRT_DATE"."$EXT"
+            mv -f $FILE ./upload/$NEW_FILE
           done
 
       - name: Release Firmware
