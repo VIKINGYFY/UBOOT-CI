@@ -79,8 +79,10 @@ jobs:
         run: |
           cd ./wrt/
 
+          sed -n "5p;7p" ./build.sh
           sed -i "5s/UBOOT_DIR=.*/UBOOT_DIR=$WRT_MTK/" ./build.sh
           sed -i "7s/ATF_DIR=.*/ATF_DIR=$WRT_ATF/" ./build.sh
+          sed -n "5p;7p" ./build.sh
 
       - name: Compile Firmware
         run: |
