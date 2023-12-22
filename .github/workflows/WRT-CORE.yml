@@ -106,8 +106,6 @@ jobs:
         run: |
           cd ./wrt/ && mkdir ./upload/
 
-          ls ./output/
-
           for FILE in $(find ./output/ -type f -iname "*.*") ; do
             EXT=$(basename $FILE | cut -d '.' -f 2-)
             NAME=$(basename $FILE | cut -d '.' -f 1)
