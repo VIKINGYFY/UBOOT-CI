@@ -15,13 +15,22 @@ jobs:
       - name: Checkout Projects
         uses: actions/checkout@main
 
-      - name: test_1
+      - name: Initialization Environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
-          echo $(sed -n "1{s/^#//;s/\r$//;p;q}" ./Uboots.sh)
-          echo ~
-          echo $(pwd)
-          echo $GITHUB_WORKSPACE
-          echo $(basename ~)
-          echo $(basename $(pwd))
-          echo $(basename $GITHUB_WORKSPACE)
-          ./Uboots.sh
+          mkdir ./upload/
+          sudo -E apt -yqq update
+          sudo -E apt -yqq purge android* azure* clang* docker* dotnet* firefox* ghc* golang* google* libclang* libgl1* lld* llvm* mongodb* mono* mysql* nodejs* openjdk* php* powershell* snap* yarn* zulu*
+          sudo -E apt -yqq autoremove --purge
+          sudo -E apt -yqq autoclean
+          sudo -E apt -yqq clean
+          sudo -E find / -type d -iregex ".*/\(android.*\|azure.*\|clang.*\|docker.*\|dotnet.*\|firefox.*\|ghc.*\|golang.*\|google.*\|libclang.*\|libgl1.*\|lld.*\|llvm.*\|mongodb.*\|mono.*\|mysql.*\|nodejs.*\|openjdk.*\|php.*\|powershell.*\|snap.*\|yarn.*\|zulu.*\)" -prune >> ./upload/TEST.TXT
+
+      - name: Release Firmware
+        uses: softprops/action-gh-release@master
+        with:
+          tag_name: test
+          files: ./upload/*.*
+          body: |
+            test
