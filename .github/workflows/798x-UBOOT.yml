@@ -16,14 +16,8 @@ env:
 permissions: write-all
 
 jobs:
-  wrt_build:
+  wrt_int:
     runs-on: ubuntu-latest
-    name: ${{matrix.WRT_ATF}}_${{matrix.WRT_MTK}}
-    strategy:
-      matrix:
-        WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
-        WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
-
     steps:
       - name: Checkout Projects
         uses: actions/checkout@main
@@ -61,25 +55,32 @@ jobs:
           sudo -E systemctl daemon-reload
           sudo -E timedatectl set-timezone "Asia/Shanghai"
 
+  wrt_build:
+    needs: wrt_int
+    runs-on: ubuntu-latest
+    name: ${{matrix.WRT_ATF}}_${{matrix.WRT_MTK}}
+    strategy:
+      matrix:
+        WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
+        WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
+
       - name: Initialization Values
         run: |
           export WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
           export WRT_SOURCE=$(echo $WRT_URL | cut -d '/' -f 5-)
-          export WRT_ATF_VER=$(echo ${{matrix.WRT_ATF}} | grep -oP 'atf-\d+')
-          export WRT_MTK_VER=$(echo ${{matrix.WRT_MTK}} | grep -oP 'mtk-\d+')
+          export WRT_VER=$(echo ${{matrix.WRT_ATF}} | grep -oP 'atf-\d+')_$(echo ${{matrix.WRT_MTK}} | grep -oP 'mtk-\d+')
           export WRT_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
           export WRT_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
 
           echo "WRT_DATE=$WRT_DATE" >> $GITHUB_ENV
           echo "WRT_SOURCE=$WRT_SOURCE" >> $GITHUB_ENV
-          echo "WRT_ATF_VER=$WRT_ATF_VER" >> $GITHUB_ENV
-          echo "WRT_MTK_VER=$WRT_MTK_VER" >> $GITHUB_ENV
+          echo "WRT_VER=$WRT_VER" >> $GITHUB_ENV
           echo "WRT_MULTI_TYPE=$WRT_MULTI_TYPE" >> $GITHUB_ENV
           echo "WRT_SINGLE_TYPE=$WRT_SINGLE_TYPE" >> $GITHUB_ENV
 
       - name: Clone Code
         run: |
-          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_URL ./wrt/
+          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_URL ./$WRT_VER/
 
       - name: Check Scripts
         run: |
@@ -87,20 +88,20 @@ jobs:
 
       - name: Modified Version
         run: |
-          cd ./wrt/
+          cd ./$WRT_VER/
 
           sed -i "5s/UBOOT_DIR=.*/UBOOT_DIR=${{matrix.WRT_MTK}}/" ./build.sh
           sed -i "7s/ATF_DIR=.*/ATF_DIR=${{matrix.WRT_ATF}}/" ./build.sh
 
       - name: Compile Firmware
         run: |
-          cd ./wrt/
+          cd ./$WRT_VER/
 
           $GITHUB_WORKSPACE/Uboots.sh
 
       - name: Machine Information
         run: |
-          cd ./wrt/
+          cd ./$WRT_VER/
 
           echo "======================="
           lscpu | egrep "name|Core|Thread"
@@ -112,7 +113,7 @@ jobs:
 
       - name: Package Firmware
         run: |
-          cd ./wrt/ && mkdir ./upload/
+          cd ./$WRT_VER/ && mkdir ./upload/
 
           for FILE in $(find ./output/ -type f -iname "*.*") ; do
             EXT=$(basename $FILE | cut -d '.' -f 2-)
@@ -124,12 +125,12 @@ jobs:
       - name: Release Firmware
         uses: softprops/action-gh-release@master
         with:
-          tag_name: ${{env.WRT_ATF_VER}}_${{env.WRT_MTK_VER}}_${{env.WRT_DATE}}
-          files: ./wrt/upload/*.*
+          tag_name: ${{env.WRT_VER}}_${{env.WRT_DATE}}
+          files: ./$WRT_VER/upload/*.*
           body: |
             这是个平台固件包，内含多个设备！
             请注意选择你需要的设备固件！
-            不要问，更就完事了！
+            不要问，刷就完事了！
 
             源码：${{env.WRT_SOURCE}}
             平台：${{env.WRT_TARGET}}
