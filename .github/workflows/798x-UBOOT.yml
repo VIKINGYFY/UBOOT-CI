@@ -16,8 +16,14 @@ env:
 permissions: write-all
 
 jobs:
-  wrt_int:
+  wrt_build:
     runs-on: ubuntu-latest
+    name: ${{env.WRT_VER}}
+    strategy:
+      matrix:
+        WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
+        WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
+
     steps:
       - name: Checkout Projects
         uses: actions/checkout@main
@@ -55,16 +61,6 @@ jobs:
           sudo -E systemctl daemon-reload
           sudo -E timedatectl set-timezone "Asia/Shanghai"
 
-  wrt_build:
-    needs: wrt_int
-    runs-on: ubuntu-latest
-    name: ${{matrix.WRT_ATF}}_${{matrix.WRT_MTK}}
-    strategy:
-      matrix:
-        WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
-        WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
-
-    steps:
       - name: Initialization Values
         run: |
           export WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
@@ -81,7 +77,7 @@ jobs:
 
       - name: Clone Code
         run: |
-          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_URL ./$WRT_VER/
+          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_URL ./wrt/
 
       - name: Check Scripts
         run: |
@@ -89,20 +85,20 @@ jobs:
 
       - name: Modified Version
         run: |
-          cd ./$WRT_VER/
+          cd ./wrt/
 
           sed -i "5s/UBOOT_DIR=.*/UBOOT_DIR=${{matrix.WRT_MTK}}/" ./build.sh
           sed -i "7s/ATF_DIR=.*/ATF_DIR=${{matrix.WRT_ATF}}/" ./build.sh
 
       - name: Compile Firmware
         run: |
-          cd ./$WRT_VER/
+          cd ./wrt/
 
           $GITHUB_WORKSPACE/Uboots.sh
 
       - name: Machine Information
         run: |
-          cd ./$WRT_VER/
+          cd ./wrt/
 
           echo "======================="
           lscpu | egrep "name|Core|Thread"
@@ -114,7 +110,7 @@ jobs:
 
       - name: Package Firmware
         run: |
-          cd ./$WRT_VER/ && mkdir ./upload/
+          cd ./wrt/ && mkdir ./upload/
 
           for FILE in $(find ./output/ -type f -iname "*.*") ; do
             EXT=$(basename $FILE | cut -d '.' -f 2-)
@@ -127,7 +123,7 @@ jobs:
         uses: softprops/action-gh-release@master
         with:
           tag_name: ${{env.WRT_VER}}_${{env.WRT_DATE}}
-          files: ./$WRT_VER/upload/*.*
+          files: ./wrt/upload/*.*
           body: |
             这是个平台固件包，内含多个设备！
             请注意选择你需要的设备固件！
