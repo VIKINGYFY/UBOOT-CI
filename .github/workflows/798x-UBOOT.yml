@@ -18,7 +18,7 @@ permissions: write-all
 jobs:
   wrt_build:
     runs-on: ubuntu-latest
-    name: ${{env.WRT_VER}}
+    name: $(echo ${{matrix.WRT_ATF}} | grep -oP 'atf-\d+')_$(echo ${{matrix.WRT_MTK}} | grep -oP 'mtk-\d+')
     strategy:
       matrix:
         WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
