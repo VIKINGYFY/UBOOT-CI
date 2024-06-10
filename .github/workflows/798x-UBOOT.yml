@@ -9,7 +9,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  WRT_URL: https://github.com/hanwckf/bl-mt798x.git
+  WRT_URL: https://github.com/Aabandon/bl-mt798x.git
   WRT_BRANCH: master
   WRT_TARGET: MTK-798x
 
@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     name: ${{matrix.WRT_ATF}}_${{matrix.WRT_MTK}}
     strategy:
+      fail-fast: false
       matrix:
         WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
         WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
