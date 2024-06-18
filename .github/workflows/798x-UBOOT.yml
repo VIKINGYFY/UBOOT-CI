@@ -9,8 +9,6 @@ on:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  WRT_URL: https://github.com/Aabandon/bl-mt798x.git
-  WRT_BRANCH: master
   WRT_TARGET: MTK-798x
 
 permissions: write-all
@@ -18,10 +16,12 @@ permissions: write-all
 jobs:
   wrt_build:
     runs-on: ubuntu-latest
-    name: ${{matrix.WRT_ATF}}_${{matrix.WRT_MTK}}
+    name: ${{matrix.WRT_SRC}}
     strategy:
       fail-fast: false
+      max-parallel: 4
       matrix:
+        WRT_SRC: [hanwckf/bl-mt798x, Aabandon/bl-mt798x]
         WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
         WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
 
@@ -65,20 +65,18 @@ jobs:
       - name: Initialization Values
         run: |
           export WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
-          export WRT_SOURCE=$(echo $WRT_URL | cut -d '/' -f 5-)
           export WRT_VER=$(echo ${{matrix.WRT_ATF}} | grep -oP 'atf-\d+')_$(echo ${{matrix.WRT_MTK}} | grep -oP 'mtk-\d+')
           export WRT_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
           export WRT_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
 
           echo "WRT_DATE=$WRT_DATE" >> $GITHUB_ENV
-          echo "WRT_SOURCE=$WRT_SOURCE" >> $GITHUB_ENV
           echo "WRT_VER=$WRT_VER" >> $GITHUB_ENV
           echo "WRT_MULTI_TYPE=$WRT_MULTI_TYPE" >> $GITHUB_ENV
           echo "WRT_SINGLE_TYPE=$WRT_SINGLE_TYPE" >> $GITHUB_ENV
 
       - name: Clone Code
         run: |
-          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_URL ./wrt/
+          git clone --depth=1 --single-branch --branch "master" "https://github.com/${{matrix.WRT_SRC}}.git" ./wrt/
 
       - name: Check Scripts
         run: |
@@ -116,22 +114,22 @@ jobs:
           for FILE in $(find ./output/ -type f -iname "*.*") ; do
             EXT=$(basename $FILE | cut -d '.' -f 2-)
             NAME=$(basename $FILE | cut -d '.' -f 1)
-            NEW_FILE="$NAME"_"$WRT_DATE"."$EXT"
+            NEW_FILE="$NAME"_"$WRT_VER"_"$WRT_DATE"."$EXT"
             mv -f $FILE ./upload/$NEW_FILE
           done
 
       - name: Release Firmware
         uses: softprops/action-gh-release@master
         with:
-          tag_name: ${{env.WRT_VER}}_${{env.WRT_DATE}}
+          tag_name: ${{matrix.WRT_SRC}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
           files: ./wrt/upload/*.*
           body: |
             这是个平台固件包，内含多个设备！
             请注意选择你需要的设备固件！
             不要问，刷就完事了！
 
-            源码：${{env.WRT_SOURCE}}
             平台：${{env.WRT_TARGET}}
+            源码：${{matrix.WRT_SRC}}
             ATF版本：${{matrix.WRT_ATF}}
             MTK版本：${{matrix.WRT_MTK}}
             单分区设备：${{env.WRT_SINGLE_TYPE}}
