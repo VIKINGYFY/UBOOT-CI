@@ -118,6 +118,8 @@ jobs:
             mv -f $FILE ./upload/$NEW_FILE
           done
 
+          zip -r ${{matrix.WRT_SRC}}_${{env.WRT_VER}}_${{env.WRT_DATE}}.zip ./upload/
+
       - name: Release Firmware
         uses: softprops/action-gh-release@master
         with:
