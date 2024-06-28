@@ -64,11 +64,13 @@ jobs:
 
       - name: Initialization Values
         run: |
+          export WRT_SOURCE=$(echo ${{matrix.WRT_SRC}} | cut -d '/' -f 1)
           export WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
           export WRT_VER=$(echo ${{matrix.WRT_ATF}} | grep -oP 'atf-\d+')_$(echo ${{matrix.WRT_MTK}} | grep -oP 'mtk-\d+')
           export WRT_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
           export WRT_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
 
+          echo "WRT_SOURCE=$WRT_SOURCE" >> $GITHUB_ENV
           echo "WRT_DATE=$WRT_DATE" >> $GITHUB_ENV
           echo "WRT_VER=$WRT_VER" >> $GITHUB_ENV
           echo "WRT_MULTI_TYPE=$WRT_MULTI_TYPE" >> $GITHUB_ENV
@@ -118,12 +120,12 @@ jobs:
             mv -f $FILE ./upload/$NEW_FILE
           done
 
-          zip -r ${{matrix.WRT_SRC}}_${{env.WRT_VER}}_${{env.WRT_DATE}}.zip ./upload/
+          zip -r ${{env.WRT_SOURCE}}_${{env.WRT_VER}}_${{env.WRT_DATE}}.zip ./upload/*.*
 
       - name: Release Firmware
         uses: softprops/action-gh-release@master
         with:
-          tag_name: ${{matrix.WRT_SRC}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
+          tag_name: ${{env.WRT_SOURCE}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
           files: ./wrt/upload/*.*
           body: |
             这是个平台固件包，内含多个设备！
@@ -131,7 +133,7 @@ jobs:
             不要问，刷就完事了！
 
             平台：${{env.WRT_TARGET}}
-            源码：${{matrix.WRT_SRC}}
+            源码：${{env.WRT_SOURCE}}
             ATF版本：${{matrix.WRT_ATF}}
             MTK版本：${{matrix.WRT_MTK}}
             单分区设备：${{env.WRT_SINGLE_TYPE}}
