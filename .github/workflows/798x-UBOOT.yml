@@ -120,7 +120,7 @@ jobs:
             mv -f $FILE ./upload/$NEW_FILE
           done
 
-          zip -r ${{env.WRT_SOURCE}}_${{env.WRT_VER}}_${{env.WRT_DATE}}.zip ./upload/*.*
+          zip -r "$WRT_SOURCE"_"$WRT_VER"_"$WRT_DATE".zip ./upload/*.*
 
       - name: Release Firmware
         uses: softprops/action-gh-release@master
