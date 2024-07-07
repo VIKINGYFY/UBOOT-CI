@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       max-parallel: 4
       matrix:
-        WRT_SRC: [VIKINGYFY/bl-mt798x]
+        WRT_SRC: [hanwckf/bl-mt798x, Aabandon/bl-mt798x]
         WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
         WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
 
