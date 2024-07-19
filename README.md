@@ -17,8 +17,6 @@ MEDIATEK系列。
 
 # 目录简要说明：
 
-Depends.txt——环境依赖列表
-
 Uboots.sh——Uboot型号脚本
 
 workflows——自定义CI配置
