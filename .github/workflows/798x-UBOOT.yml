@@ -19,9 +19,9 @@ jobs:
     name: ${{matrix.WRT_SRC}}
     strategy:
       fail-fast: false
-      max-parallel: 4
+      #max-parallel: 4
       matrix:
-        WRT_SRC: [hanwckf/bl-mt798x, Aabandon/bl-mt798x]
+        WRT_SRC: [VIKINGYFY/mt798x-uboot]
         WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
         WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
 
