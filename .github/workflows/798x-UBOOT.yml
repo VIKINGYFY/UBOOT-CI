@@ -78,7 +78,7 @@ jobs:
 
       - name: Clone Code
         run: |
-          git clone --depth=1 --single-branch --branch "master" "https://github.com/${{matrix.WRT_SRC}}.git" ./wrt/
+          git clone --depth=1 --single-branch --branch "main" "https://github.com/${{matrix.WRT_SRC}}.git" ./wrt/
 
       - name: Check Scripts
         run: |
