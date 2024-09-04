@@ -2,26 +2,42 @@ name: 798x-UBOOT
 
 on:
   #自动编译：每周日早上4点
-  #schedule:
-    #- cron: 0 20 * * 0
+  schedule:
+    - cron: 0 20 * * 0
   #手动编译
   workflow_dispatch:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   WRT_TARGET: MTK-798x
+  WRT_REPO: https://github.com/hanwckf/bl-mt798x.git
+  WRT_BRANCH: master
 
 permissions: write-all
 
 jobs:
-  wrt_build:
+  cleanup:
     runs-on: ubuntu-latest
-    name: ${{matrix.WRT_SRC}}
+    steps:
+      - name: Delete Old Releases
+        uses: dev-drprasad/delete-older-releases@master
+        with:
+          keep_latest: 0
+          delete_tags: true
+
+      - name: Delete Old Workflows
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 0
+          keep_minimum_runs: 1
+
+  build:
+    runs-on: ubuntu-latest
+    needs: cleanup
     strategy:
       fail-fast: false
       #max-parallel: 4
       matrix:
-        WRT_SRC: [VIKINGYFY/mt798x-uboot]
         WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a]
         WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825]
 
@@ -58,29 +74,27 @@ jobs:
           sudo -E apt -yqq autoremove --purge
           sudo -E apt -yqq autoclean
           sudo -E apt -yqq clean
-          sudo -E apt -yqq install $(sed -n "1{s/\r$//g;p;q}" $GITHUB_WORKSPACE/Depends.txt)
+          sudo -E apt -yqq install bison build-essential device-tree-compiler dos2unix flex gcc-aarch64-linux-gnu libssl-dev
           sudo -E systemctl daemon-reload
           sudo -E timedatectl set-timezone "Asia/Shanghai"
 
       - name: Initialization Values
         run: |
-          export WRT_AUTHOR=$(echo ${{matrix.WRT_SRC}} | cut -d '/' -f 1)
+          export WRT_AUTHOR=$(echo $WRT_REPO | cut -d '/' -f 4)
           export WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d")
           export WRT_VER=$(echo ${{matrix.WRT_ATF}} | grep -oP 'atf-\d+')_$(echo ${{matrix.WRT_MTK}} | grep -oP 'mtk-\d+')
           export WRT_MULTI_TYPE=$(sed -n "2{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
           export WRT_SINGLE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Uboots.sh)
-          export WRT_REPO=https://github.com/${{matrix.WRT_SRC}}.git
 
           echo "WRT_AUTHOR=$WRT_AUTHOR" >> $GITHUB_ENV
           echo "WRT_DATE=$WRT_DATE" >> $GITHUB_ENV
           echo "WRT_VER=$WRT_VER" >> $GITHUB_ENV
           echo "WRT_MULTI_TYPE=$WRT_MULTI_TYPE" >> $GITHUB_ENV
           echo "WRT_SINGLE_TYPE=$WRT_SINGLE_TYPE" >> $GITHUB_ENV
-          echo "WRT_REPO=$WRT_REPO" >> $GITHUB_ENV
 
       - name: Clone Code
         run: |
-          git clone --depth=1 --single-branch --branch ${{matrix.WRT_BRANCH || main}} $WRT_REPO ./wrt/
+          git clone --depth=1 --single-branch --branch $WRT_BRANCH $WRT_REPO ./wrt/
 
       - name: Check Scripts
         run: |
@@ -104,7 +118,7 @@ jobs:
           cd ./wrt/
 
           echo "======================="
-          lscpu | egrep "name|Core|Thread"
+          lscpu | grep -E "name|Core|Thread"
           echo "======================="
           df -h
           echo "======================="

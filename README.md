@@ -3,7 +3,7 @@
 
 UBOOT源码：
 
-https://github.com/VIKINGYFY/mt798x-uboot.git
+https://github.com/hanwckf/bl-mt798x.git
 
 # 固件简要说明：
 
