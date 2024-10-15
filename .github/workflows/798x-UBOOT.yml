@@ -17,7 +17,7 @@ permissions: write-all
 
 jobs:
   cleanup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Delete Old Releases
         uses: dev-drprasad/delete-older-releases@master
@@ -32,7 +32,7 @@ jobs:
           keep_minimum_runs: 1
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: cleanup
     strategy:
       fail-fast: false
