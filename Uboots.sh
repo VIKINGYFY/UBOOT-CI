@@ -24,6 +24,7 @@ SOC=mt7986 BOARD=tplink_tl-xtr8488 ./build.sh
 SOC=mt7986 BOARD=zyxel_ex5700 ./build.sh
 
 SOC=mt7981 BOARD=ax3000t MULTI_LAYOUT=1 ./build.sh
+SOC=mt7981 BOARD=ax3000t_an8855 MULTI_LAYOUT=1 ./build.sh
 SOC=mt7981 BOARD=clt_r30b1 MULTI_LAYOUT=1 ./build.sh
 SOC=mt7981 BOARD=honor_fur-602 MULTI_LAYOUT=1 ./build.sh
 SOC=mt7981 BOARD=newland_nl-wr8103 MULTI_LAYOUT=1 ./build.sh
