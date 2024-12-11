@@ -137,7 +137,7 @@ jobs:
           zip -r ./upload/"$WRT_AUTHOR"_"$WRT_VER"_"$WRT_DATE".zip ./upload/*.*
 
       - name: Release Firmware
-        uses: softprops/action-gh-release@v2.1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{env.WRT_AUTHOR}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
           files: ./wrt/upload/*.*
