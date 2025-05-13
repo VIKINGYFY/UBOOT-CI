@@ -17,7 +17,7 @@ permissions: write-all
 
 jobs:
   cleanup:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Delete old Releases and Workflows
         uses: ophub/delete-releases-workflows@main
@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       #max-parallel: 4
       matrix:
-        WRT_ATF: [atf-20220606-637ba581b, atf-20231013-0ea67d76a, atf-20250212-e09077068]
+        WRT_ATF: [atf-20220606-637ba581b, atf-20240117-bacca82a8]
         WRT_MTK: [uboot-mtk-20230718-09eda825]
 
     steps:
@@ -47,6 +47,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
+          sudo -E apt -yqq purge firefox
           sudo -E apt -yqq update
           sudo -E apt -yqq full-upgrade
           sudo -E apt -yqq autoremove --purge
