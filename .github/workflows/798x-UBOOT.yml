@@ -10,8 +10,8 @@ on:
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   WRT_TARGET: MTK-798x
-  WRT_REPO: https://github.com/1715173329/bl-mt798x-oss.git
-  WRT_BRANCH: atf-2025
+  WRT_REPO: https://github.com/hanwckf/bl-mt798x.git
+  WRT_BRANCH: master
 
 permissions: write-all
 
@@ -36,8 +36,8 @@ jobs:
       fail-fast: false
       #max-parallel: 4
       matrix:
-        WRT_ATF: [atf-20220606-637ba581b, atf-20240117-bacca82a8]
-        WRT_MTK: [uboot-mtk-20230718-09eda825]
+        WRT_ATF: [atf-20220606-637ba581b, atf-20240117-bacca82a8, atf-20250711]
+        WRT_MTK: [uboot-mtk-20220606, uboot-mtk-20230718-09eda825, uboot-mtk-20250711]
 
     steps:
       - name: Checkout Projects
@@ -144,7 +144,7 @@ jobs:
           zip -r ./upload/"$WRT_AUTHOR"_"$WRT_VER"_"$WRT_DATE".zip ./upload/*.*
 
       - name: Release Firmware
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@master
         with:
           tag_name: ${{env.WRT_AUTHOR}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
           files: ./wrt/upload/*.*
