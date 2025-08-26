@@ -22,3 +22,6 @@ Depends.txt——环境依赖列表
 Uboots.sh——Uboot型号脚本
 
 workflows——自定义CI配置
+
+#
+[![Stargazers over time](https://starchart.cc/VIKINGYFY/UBOOT-CI.svg?variant=adaptive)](https://starchart.cc/VIKINGYFY/UBOOT-CI)
