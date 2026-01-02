@@ -1,7 +1,4 @@
 # UBOOT-CI
-云编译UBOOT固件
-
-UBOOT源码：
 
 https://github.com/hanwckf/bl-mt798x.git
 
