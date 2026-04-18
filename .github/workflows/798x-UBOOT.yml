@@ -4,16 +4,16 @@
 name: 798x-UBOOT
 
 on:
-  #自动编译：每月1号
+  #自动编译：每周一早上6点
   schedule:
-    - cron: 0 0 1 * *
+    - cron: 0 22 * * 0
   #手动编译
   workflow_dispatch:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   WRT_TARGET: MTK-798x
-  WRT_REPO: https://github.com/hanwckf/bl-mt798x.git
+  WRT_REPO: https://github.com/Yuzhii0718/bl-mt798x-dhcpd.git
   WRT_BRANCH: master
 
 permissions: write-all
@@ -39,8 +39,7 @@ jobs:
       fail-fast: false
       #max-parallel: 4
       matrix:
-        WRT_ATF: [atf-20250711]
-        WRT_MTK: [uboot-mtk-20230718-09eda825]
+        WRT_VER: [2025, SP1, SP2]
 
     steps:
       - name: Checkout Projects
@@ -68,7 +67,7 @@ jobs:
         run: |
           echo "WRT_AUTHOR=$(echo $WRT_REPO | cut -d '/' -f 4)" >> $GITHUB_ENV
           echo "WRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d")" >> $GITHUB_ENV
-          echo "WRT_VER=$(echo ${{matrix.WRT_ATF}} | grep -oP 'atf-\d+')_$(echo ${{matrix.WRT_MTK}} | grep -oP 'mtk-\d+')" >> $GITHUB_ENV
+          echo "WRT_VER=${{matrix.WRT_VER}}" >> $GITHUB_ENV
 
       - name: Clone Code
         run: |
@@ -76,9 +75,6 @@ jobs:
 
       - name: Compile Prepare
         run: |
-          sed -i "5s/UBOOT_DIR=.*/UBOOT_DIR=${{matrix.WRT_MTK}}/" ./wrt/build.sh
-          sed -i "7s/ATF_DIR=.*/ATF_DIR=${{matrix.WRT_ATF}}/" ./wrt/build.sh
-
           # 收集 uboot 配置并生成 Uboots.txt
           declare -A lines_map
           while IFS= read -r f; do
@@ -89,14 +85,15 @@ jobs:
 
             key="$soc:$board"
             if [[ $rest == *_multi_layout ]]; then
-              lines_map["$key"]="SOC=$soc BOARD=$board MULTI_LAYOUT=1 ./build.sh"
+              lines_map["$key"]="SOC=$soc BOARD=$board VERSION=$WRT_VER MULTI_LAYOUT=1 ./build.sh"
             elif [[ -z "${lines_map[$key]}" ]]; then
-              lines_map["$key"]="SOC=$soc BOARD=$board ./build.sh"
+              lines_map["$key"]="SOC=$soc BOARD=$board VERSION=$WRT_VER ./build.sh"
             fi
           done < <(find ./wrt/uboot-mtk-*/configs -type f -name 'mt798*defconfig' | grep -iE 'mt798[16]_' | grep -ivE 'rfb|fpga')
 
           # 输出 Uboots.txt
           printf "%s\n" "${lines_map[@]}" | sort > ./Uboots.txt
+          cat ./Uboots.txt
 
           # 生成 TYPE_7981 和 TYPE_7986（按 SOC 分类，BOARD 大写 + 排序）
           for soc in 7981 7986; do
@@ -140,16 +137,16 @@ jobs:
           for FILE in $(find ./output/ -type f -iname "*.*") ; do
             EXT=$(basename $FILE | cut -d '.' -f 2-)
             NAME=$(basename $FILE | cut -d '.' -f 1)
-            NEW_FILE="$NAME"_"$WRT_VER"_"$WRT_DATE"."$EXT"
+            NEW_FILE="$NAME"-"$WRT_DATE"."$EXT"
             mv -f $FILE ./upload/$NEW_FILE
           done
 
-          zip -r ./upload/"$WRT_AUTHOR"_"$WRT_VER"_"$WRT_DATE".zip ./upload/*.*
+          zip -r ./upload/"$WRT_AUTHOR"-"$WRT_VER"-"$WRT_DATE".zip ./upload/*.*
 
       - name: Release Firmware
         uses: softprops/action-gh-release@master
         with:
-          tag_name: ${{env.WRT_AUTHOR}}_${{env.WRT_VER}}_${{env.WRT_DATE}}
+          tag_name: ${{env.WRT_AUTHOR}}-${{env.WRT_VER}}-${{env.WRT_DATE}}
           files: ./wrt/upload/*.*
           body: |
             这是个平台固件包，内含多个设备！
@@ -159,9 +156,6 @@ jobs:
             平台：${{env.WRT_TARGET}}
             源码：${{env.WRT_REPO}}
             分支：${{env.WRT_BRANCH}}
-
-            ATF版本：${{matrix.WRT_ATF}}
-            MTK版本：${{matrix.WRT_MTK}}
 
             7981设备：${{env.WRT_TYPE_7981}}
             7986设备：${{env.WRT_TYPE_7986}}
