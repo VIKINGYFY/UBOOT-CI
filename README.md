@@ -4,7 +4,7 @@
 
 # 高质量<付费>中转站
 
-[LiBwrt-Ai](https://api.zipimg.cn/register?aff=LR7FSZ2ZZ4D3)
+[LiBwrt-Ai](https://api.zipimg.cn/register?aff=FFPS3UMJ8HJD)
 
 # 本地编译器
 
@@ -45,5 +45,12 @@ MEDIATEK系列。
 
 workflows——自定义CI配置
 
-#
-[![Stargazers over time](https://starchart.cc/VIKINGYFY/UBOOT-CI.svg?variant=adaptive)](https://starchart.cc/VIKINGYFY/UBOOT-CI)
+## Star History
+
+<a href="https://www.star-history.com/?repos=vikingyfy%2Fuboot-ci&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=vikingyfy/uboot-ci&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=vikingyfy/uboot-ci&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=vikingyfy/uboot-ci&type=date&legend=top-left" />
+ </picture>
+</a>
